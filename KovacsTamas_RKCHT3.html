@@ -1,0 +1,621 @@
+<!--Harry Potter és a Halál Ereklyéi part 2 Harry vs Voldemort-->
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset=utf-8>
+    <title>KTK</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #watermark {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            color: white;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            width: 250px;
+            background-color: rgba(0,0,0,0.2);
+            padding: 1em;
+            border-radius: 0 0 1em 0;
+        }
+        #watermark2 {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            color: white;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            text-align: left;
+            width: 250px;
+            background-color: rgba(0,0,0,0.2);
+            padding: 1em;
+            border-radius: 0 0 0em 1em;
+        }
+        .hide{
+            visibility: hidden;
+        }
+    </style>
+</head>
+
+<body>
+<script type="importmap">
+{
+    "imports": {
+         "three": "./js-r154/build/three.module.js",
+         "TrackballControls": "./js-r154/examples/jsm/controls/TrackballControls.js",
+         "OBJLoader": "./js-r154/examples/jsm/loaders/OBJLoader.js",
+         "MTLLoader": "./js-r154/examples/jsm/loaders/MTLLoader.js"
+    }
+}
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { TrackballControls } from 'TrackballControls';
+    import { OBJLoader } from 'OBJLoader';
+    import { MTLLoader } from 'MTLLoader';
+
+    let WIDTH, HEIGHT, aspectRatio;
+    let scene, camera, renderer;
+    let controls;
+    let geometry, material, mesh;
+    let container;
+    let ki, be, ment;
+    let nappal = false;
+    
+    const objLoader1 = new OBJLoader();
+    const mtlLoader1 = new MTLLoader();
+    const objLoader2 = new OBJLoader();
+    const mtlLoader2 = new MTLLoader();
+    const objLoader3 = new OBJLoader();
+    const mtlLoader3 = new MTLLoader();
+
+    init();
+    animate();
+
+    function ocean(x,y,z){
+        mtlLoader1.load('/blender/ocean/ocean.mtl', (mtl) => {
+            mtl.preload();
+            objLoader1.setMaterials(mtl);
+            objLoader1.load('/blender/ocean/ocean.obj', (root) => {
+                scene.add(root);
+                root.traverse( (child) => {
+                            if (child instanceof THREE.Mesh) {
+                                child.castShadow = false;
+                                child.receiveShadow = true;
+                            }
+                        });
+                    });
+            });
+        }
+    function hajo1(x,y,z){
+        mtlLoader2.load('/blender/hajo/hajo.mtl', (mtl2) => {
+            mtl2.preload();
+            objLoader2.setMaterials(mtl2);
+            objLoader2.load('/blender/hajo/hajo.obj', (root2) => {
+                scene.add(root2);
+                root2.scale.set(4,4,4)
+                root2.position.x = -150;
+                root2.position.z = 150;
+                root2.position.y = 10;
+                root2.rotation.y = 45 * (Math.PI / 180);
+                root2.traverse( (child) => {
+                    if (child instanceof THREE.Mesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+            });
+        });
+    }
+    function hajo2(x,y,z){
+        mtlLoader3.load('/blender/hajo/hajo2.mtl', (mtl3) => {
+            mtl3.preload();
+            objLoader3.setMaterials(mtl3);
+            objLoader3.load('/blender/hajo/hajo2.obj', (root3) => {
+                scene.add(root3);
+                root3.scale.set(4,4,4);
+                root3.position.x = 150;
+                root3.position.z = -50;
+                root3.rotation.y = 20 * (Math.PI / 180);
+                root3.traverse( (child) => {
+                    if (child instanceof THREE.Mesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+            });
+        });
+    }
+    function agyu(x, y, z, rot, ido, anim){
+        let boxGeometry = new THREE.BoxGeometry( 10, 2, 6 );
+        let boxMaterial = new THREE.MeshPhongMaterial();
+        let boxMesh = new THREE.Mesh( boxGeometry, boxMaterial );
+        scene.add( boxMesh );
+        boxMesh.scale.set(0.7,0.7,0.7);
+        boxMesh.position.x = x;
+        boxMesh.position.y = y;
+        boxMesh.position.z = z;
+        boxMesh.rotation.y = rot  * (Math.PI / 180);
+        boxMesh.castShadow = true;
+        boxMesh.receiveShadow = true;
+    
+        let boxGeometry2 = new THREE.BoxGeometry( 10, 2, 1 );
+        let boxMesh2 = new THREE.Mesh( boxGeometry2, boxMaterial );
+        boxMesh2.position.y = 2;
+        boxMesh2.position.z=-2.5;
+        boxMesh.add( boxMesh2 );
+
+        let boxMesh3 = new THREE.Mesh( boxGeometry2, boxMaterial );
+        boxMesh3.position.y = 2;
+        boxMesh3.position.z=2.5;
+        boxMesh.add( boxMesh3 );
+
+        let cylGeometry = new THREE.CylinderGeometry( 1, 1, 1, 32 );
+        let cylMesh = new THREE.Mesh( cylGeometry, boxMaterial );
+        boxMesh.add( cylMesh );
+        cylMesh.position.y = -0.7;
+        cylMesh.position.z = 3.5;
+        cylMesh.position.x = 3.5;
+        cylMesh.rotation.x = Math.PI/2;
+
+        let cylMesh2 = new THREE.Mesh( cylGeometry, boxMaterial );
+        boxMesh.add( cylMesh2 );
+        cylMesh2.position.y = -0.7;
+        cylMesh2.position.z = 3.5;
+        cylMesh2.position.x = -3.5;
+        cylMesh2.rotation.x = Math.PI/2;
+
+        let cylMesh3 = new THREE.Mesh( cylGeometry, boxMaterial );
+        boxMesh.add( cylMesh3 );
+        cylMesh3.position.y = -0.7;
+        cylMesh3.position.z = -3.5;
+        cylMesh3.position.x = 3.5;
+        cylMesh3.rotation.x = Math.PI/2;
+
+        let cylMesh4 = new THREE.Mesh( cylGeometry, boxMaterial );
+        boxMesh.add( cylMesh4 );
+        cylMesh4.position.y = -0.7;
+        cylMesh4.position.z = -3.5;
+        cylMesh4.position.x = -3.5;
+        cylMesh4.rotation.x = Math.PI/2;
+
+
+        let cylGeometry2 = new THREE.CylinderGeometry( 1.5, 2.5, 15, 32 );
+        let cylMaterial2 = new THREE.MeshPhongMaterial();
+        let cylMesh5 = new THREE.Mesh( cylGeometry2, cylMaterial2 );
+        cylMesh5.rotation.z = -Math.PI/2;
+        cylMesh5.position.y = 2;
+        cylMesh5.position.x = 2;
+        boxMesh.add( cylMesh5 );
+
+        let cylGeometry3 = new THREE.CylinderGeometry( 2, 2, 0.7, 32 );
+        let cylMesh6 = new THREE.Mesh( cylGeometry3, cylMaterial2 );
+        cylMesh6.rotation.z = -Math.PI/2;
+        cylMesh6.position.y = 2;
+        cylMesh6.position.x = 9.7;
+        boxMesh.add( cylMesh6 );
+
+        let sphereGeometry = new THREE.SphereGeometry( 2.5, 30, 30 );
+        let sphereMesh = new THREE.Mesh( sphereGeometry, cylMaterial2 );
+        boxMesh.add( sphereMesh );
+        sphereMesh.position.x = -5.5;
+        sphereMesh.position.y = 2;
+
+        let golyoGeometry = new THREE.SphereGeometry( 1, 30, 30 );
+        let golyoMesh = new THREE.Mesh( golyoGeometry, cylMaterial2 );
+        boxMesh.add( golyoMesh );
+        golyoMesh.position.x = 8;
+        golyoMesh.position.y = 2;
+
+        if(anim != "nem"){
+            function move() {
+                let ki = 0;
+                let be = 0;
+                let speed = 5;
+                const intervalId = setInterval(() => {
+                    golyoMesh.position.x += speed;
+                    golyoMesh.position.y -= 1;
+                }, 100);
+
+                function moveOut() {
+                    if (ki < 100) {
+                        ki+=5;
+                        if(anim == "jobb"){
+                            boxMesh.position.x -= 0.2;
+                            boxMesh.position.z += 0.2;
+                        }else if(anim == "bal"){
+                            boxMesh.position.x += 0.2;
+                            boxMesh.position.z -= 0.2;
+                        }
+                        golyoMesh.position.x += speed;
+                        golyoMesh.position.y -= 1;
+                        
+                        setTimeout(moveOut, 1);
+                    } else {
+                        moveIn();
+                    }
+                }
+
+                function moveIn() {
+                    if (be < 100) {
+                        be+=5;
+                        if(anim == "jobb"){
+                            boxMesh.position.x += 0.2;
+                            boxMesh.position.z -= 0.2;
+                        }else if(anim == "bal"){
+                            boxMesh.position.x -= 0.2;
+                            boxMesh.position.z += 0.2;
+                        }
+                        golyoMesh.position.x += speed;
+                        golyoMesh.position.y -= 1;
+                        setTimeout(moveIn, 1);
+                    } else {
+                        clearInterval(intervalId);
+                        setTimeout(move, ido);
+                    }
+                }
+                golyoMesh.position.x = 8;
+                golyoMesh.position.y = 2;
+                moveOut();
+            }
+
+            move();
+        }
+
+        var textureLoader = new THREE.TextureLoader();
+        var texture = textureLoader.load( 'kepek/wood.jpg' );
+        boxMaterial.map = texture;
+
+        var textureLoader2 = new THREE.TextureLoader();
+        var texture2 = textureLoader2.load( 'kepek/iron.jpg' );
+        cylMaterial2.map = texture2;
+    }
+    function nap(){
+        let sun = new THREE.TextureLoader().load('kepek/sun.jpg');
+        let moon = new THREE.TextureLoader().load('kepek/moon.jpg')
+        let sphereGeometry = new THREE.SphereGeometry( 30, 30, 30 );
+        let sphereMaterial = new THREE.MeshPhongMaterial({
+            map: moon
+        });
+        let sphereMesh = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        scene.add( sphereMesh );
+        sphereMesh.position.y = 200;
+        sphereMesh.position.z = -500;
+
+        document.addEventListener('keydown', handleKeyDown);
+        function handleKeyDown(event) {
+            if (event.key == 'N' || event.key == 'n') {
+                if (sphereMaterial.map === sun) {
+                    sphereMaterial.map = moon;
+                } else {
+                    sphereMaterial.map = sun;
+                }
+            }
+        }
+    }
+    function kormany(x,y,z,rot){
+        let boxGeometry = new THREE.BoxGeometry( 20, 1, 7);
+        let boxMaterial = new THREE.MeshPhongMaterial({color: 0x434221});
+        let boxMesh = new THREE.Mesh( boxGeometry, boxMaterial );
+        scene.add( boxMesh );
+        boxMesh.scale.set(0.7,0.7,0.7);
+        boxMesh.position.x = x;
+        boxMesh.position.y = y;
+        boxMesh.position.z = z;
+        boxMesh.rotation.y = rot  * (Math.PI / 180);
+        boxMesh.castShadow = true;
+        boxMesh.receiveShadow = true;
+
+        let boxGeometry2 = new THREE.BoxGeometry( 5, 13, 5 );
+        let boxMesh2 = new THREE.Mesh( boxGeometry2, boxMaterial );
+        boxMesh.add( boxMesh2 );
+        boxMesh2.position.y = 7;
+
+        var geometry6 = new THREE.CylinderGeometry(3, 3.5, 1, 4);
+        var cone6 = new THREE.Mesh(geometry6, boxMaterial);
+        boxMesh.add(cone6);
+        cone6.position.y = 14;
+        cone6.rotation.y = 45 * (Math.PI / 180);
+
+        const geometry = new THREE.TorusGeometry( 7, 1, 5, 40 ); 
+        const torus = new THREE.Mesh( geometry, boxMaterial ); 
+        boxMesh.add( torus );
+        torus.position.y = 12;
+        torus.position.z = 4;
+
+        let cylGeometry = new THREE.CylinderGeometry( 2, 2, 3, 32 );
+        let cylMesh = new THREE.Mesh( cylGeometry, boxMaterial );
+        boxMesh.add( cylMesh );
+        cylMesh.rotation.x = 90 * (Math.PI / 180);
+        cylMesh.position.z=3.5;
+        cylMesh.position.y = 12;
+
+        let cylGeometry2 = new THREE.CylinderGeometry( 0.7, 0.7, 22, 32 );
+        let cylMesh2 = new THREE.Mesh( cylGeometry2, boxMaterial );
+        boxMesh.add( cylMesh2 );
+        cylMesh2.position.z= 3.9;
+        cylMesh2.position.y = 12;
+
+        let cylMesh3 = new THREE.Mesh( cylGeometry2, boxMaterial );
+        boxMesh.add( cylMesh3 );
+        cylMesh3.position.z=3.9;
+        cylMesh3.position.y = 12;
+        cylMesh3.rotation.z = 45 * (Math.PI / 180);
+
+        let cylMesh4 = new THREE.Mesh( cylGeometry2, boxMaterial );
+        boxMesh.add( cylMesh4 );
+        cylMesh4.position.z=3.9;
+        cylMesh4.position.y = 12;
+        cylMesh4.rotation.z = 90 * (Math.PI / 180);
+
+        let cylMesh5 = new THREE.Mesh( cylGeometry2, boxMaterial );
+        boxMesh.add( cylMesh5 );
+        cylMesh5.position.z=3.9;
+        cylMesh5.position.y = 12;
+        cylMesh5.rotation.z = -45 * (Math.PI / 180);
+
+        let cylGeometry3 = new THREE.CylinderGeometry( 1.5, 1.5, 3, 32 );
+        let ironMaterial = new THREE.MeshPhongMaterial({color: 0x434221});
+        let cylMesh6 = new THREE.Mesh( cylGeometry3, ironMaterial );
+        boxMesh.add( cylMesh6 );
+        cylMesh6.rotation.x = 90 * (Math.PI / 180);
+        cylMesh6.position.z=3.7;
+        cylMesh6.position.y = 12;
+
+        let boxGeometry3 = new THREE.BoxGeometry( 10, 1, 6);
+        let boxMesh3 = new THREE.Mesh( boxGeometry3, ironMaterial );
+        boxMesh.add( boxMesh3 );
+        boxMesh3.position.y = 0.2;
+        boxMesh3.position.y = 0.2;
+
+        var textureLoader = new THREE.TextureLoader();
+        var texture = textureLoader.load( 'kepek/wood.jpg' );
+        boxMaterial.map = texture;
+        let rotationAngle = 0;
+        document.addEventListener('keydown', handleKeyDown);
+        function handleKeyDown(event) {
+        if (event.key === 'ArrowRight') {
+            rotationAngle += 2;
+        } else if (event.key === 'ArrowLeft') {
+            rotationAngle -= 2;
+        }
+
+    cylMesh4.rotation.z = (90+rotationAngle) * (Math.PI / 180);
+    cylMesh5.rotation.z = (-45 + rotationAngle) * (Math.PI / 180);
+    cylMesh3.rotation.z = (45 + rotationAngle) * (Math.PI / 180);
+    cylMesh2.rotation.z = (rotationAngle) * (Math.PI / 180);
+    torus.rotation.z = (rotationAngle) * (Math.PI / 180);
+}
+
+        var texture2 = textureLoader.load( 'kepek/iron.jpg' );
+        ironMaterial.map = texture2;
+    }
+    function lampa(x,y,z, hajo){
+        var geometry = new THREE.CylinderGeometry(5, 5, 1, 6);
+        var material = new THREE.MeshPhongMaterial();
+        var cone = new THREE.Mesh(geometry, material);
+        scene.add(cone);
+
+        cone.scale.set(0.3,0.3,0.3);
+        cone.position.x = x;
+        cone.position.y = y;
+        cone.position.z = z;
+        cone.castShadow = true;
+        cone.receiveShadow = true;
+                
+
+        var geometry2 = new THREE.CylinderGeometry(4.5, 4.5, 1, 6);
+        var cone2 = new THREE.Mesh(geometry2, material);
+        cone.add(cone2);
+        cone2.position.y = 1;
+
+        var cone3 = new THREE.Mesh(geometry2, material);
+        cone.add(cone3);
+        cone3.position.y = 9;
+
+        var cone4 = new THREE.Mesh(geometry, material);
+        cone.add(cone4);
+        cone4.position.y = 10;
+
+        var geometry3 = new THREE.CylinderGeometry(0, 5, 1, 6);
+        var cone5 = new THREE.Mesh(geometry3, material);
+        cone.add(cone5);
+        cone5.position.y = 11;
+
+        const geometry4 = new THREE.TorusGeometry( 0.5, 0.2, 9, 100 ); 
+        const torus = new THREE.Mesh( geometry4, material );
+        cone.add( torus );
+        torus.position.y = 11.5;
+
+        const geometry5 = new THREE.TorusGeometry( 1.5, 0.2, 9, 100 ); 
+        const torus2 = new THREE.Mesh( geometry5, material );
+        cone.add( torus2 );
+        torus2.position.y = 13;
+        torus2.rotation.y = Math.PI/2;
+        //torus2.rotation.x = 30 * (Math.PI / 180);
+
+        var geometry6 = new THREE.CylinderGeometry(1, 1, 7, 6);
+        var cone6 = new THREE.Mesh(geometry6, material);
+        cone.add(cone6);
+        cone6.position.y = 5;
+        cone6.position.z = 3;
+
+        var cone7 = new THREE.Mesh(geometry6, material);
+        cone.add(cone7);
+        cone7.position.y = 5;
+        cone7.position.z = 1.5;
+        cone7.position.x = 2.5;
+
+        var cone8 = new THREE.Mesh(geometry6, material);
+        cone.add(cone8);
+        cone8.position.y = 5;
+        cone8.position.z = 1.5;
+        cone8.position.x = -2.5;
+
+        var cone9 = new THREE.Mesh(geometry6, material);
+        cone.add(cone9);
+        cone9.position.y = 5;
+        cone9.position.z = -1.5;
+        cone9.position.x = 2.5;
+
+        var cone10 = new THREE.Mesh(geometry6, material);
+        cone.add(cone10);
+        cone10.position.y = 5;
+        cone10.position.z = -1.5;
+        cone10.position.x = -2.5;
+
+        var cone11 = new THREE.Mesh(geometry6, material);
+        cone.add(cone11);
+        cone11.position.y = 5;
+        cone11.position.z = -3;
+
+        const lampaGeometry = new THREE.CylinderGeometry(3.5, 3.5, 8, 6);
+        const lampaMaterial = new THREE.MeshPhongMaterial({
+            map: new THREE.TextureLoader().load('kepek/light.jpg'),
+            emissive: new THREE.Color(1, 1, 1),
+            emissiveIntensity: 1,
+        });
+        
+
+        const lampa = new THREE.Mesh(lampaGeometry, lampaMaterial);
+        cone.add(lampa);
+        lampa.position.y = 5;
+
+        const pointLight = new THREE.PointLight(0xFFD833, 2);
+        lampa.add(pointLight); 
+        pointLight.position.set(0, 5, 0);
+        pointLight.intensity = 0.05;
+
+        var textureLoader = new THREE.TextureLoader();
+        var texture = textureLoader.load( 'kepek/iron.jpg' );
+        material.map = texture;
+        document.addEventListener('keydown', handleKeyDown);
+        function handleKeyDown(event) {
+            if (hajo == "bal") {
+                if (event.key == 'B' || event.key == 'b') {
+                    if (pointLight.intensity === 0.05) {
+                        pointLight.intensity = 0.00;
+                        lampaMaterial.map = new THREE.TextureLoader().load('kepek/iron.jpg');
+                    } else {
+                        pointLight.intensity = 0.05; 
+                        lampaMaterial.map = new THREE.TextureLoader().load('kepek/light.jpg');
+                    }
+                }
+            } else {
+                if (event.key == 'J' || event.key == 'j') {
+                    if (pointLight.intensity === 0.05) {
+                        pointLight.intensity = 0.00;
+                        lampaMaterial.map = new THREE.TextureLoader().load('kepek/iron.jpg');
+                    } else {
+                        pointLight.intensity = 0.05;
+                        lampaMaterial.map = new THREE.TextureLoader().load('kepek/light.jpg');
+                    }
+                }
+            }
+        }
+    }
+    function init() {
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        aspectRatio = WIDTH / HEIGHT;
+
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer.setSize( WIDTH, HEIGHT );
+        renderer.setClearColor( 0x040620 );
+        document.body.appendChild( renderer.domElement );
+
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera( 75, aspectRatio, 0.1, 1000 );
+        camera.position.z = 350;
+        camera.position.y = 250;
+
+        controls = new TrackballControls( camera, renderer.domElement );
+        controls.rotateSpeed = 5.0;
+        controls.panSpeed = 1.0;
+
+        const watermark = document.createElement('div');
+        watermark.id = 'watermark';
+        watermark.innerHTML = 'Készítette: Kovács Tamás<br>NEPTUN: RKCHT3<br>Szak: Programtervező<br>Tanév: 2023-2024<br><br> Karib-tenger kalózai<br>Fekete Gyöngy vs Bolygó Hollandi';
+        document.body.appendChild(watermark);
+
+        const watermark2 = document.createElement('div');
+        watermark2.id = 'watermark2';
+        watermark2.innerHTML = 'Funkciók:<br>Szöveg ki/be: I<br>Kormány forgatás: jobb/bal nyíl<br>Bal hajó lámpa: B<br>Jobb hajó lámpa: J<br>Éjszaka/nappal: N';
+        document.body.appendChild(watermark2);
+
+        ocean();
+        hajo1();
+        hajo2();
+        agyu(167, 16,-43,17, 5000, "nem");
+        agyu(164, 16,-53,17, 5000, "nem");
+        agyu(161, 16,-59,17, 5000, "nem");
+        agyu(135, 16,-48, -160, 5500, "bal");
+        agyu(137, 16,-42, -160, 5000, "bal");
+        agyu(140, 16,-32, -160, 5900, "bal");
+        agyu(-158, 25, 163,-135, 5000, "nem");
+        agyu(-152, 25, 168,-135, 5000, "nem");
+        agyu(-164, 25, 158,-135, 5000, "nem");
+        agyu(-143, 25, 138, 45, 5000, "jobb");
+        agyu(-138, 25, 143, 45, 5500, "jobb");
+        agyu(-133, 25, 148, 45, 6000, "jobb");
+        nap();
+        kormany(140,25,-75,-160);
+        kormany(-170, 35, 130,-135);
+        lampa(150, 15, -50);
+        lampa(173, 32, 15);
+        lampa(130, 43, -105, "jobb");
+        lampa(-190, 53, 107, "jobb");
+        lampa(-190, 53, 107, "jobb");
+        lampa(-145, 25, 160, "bal");
+        lampa(-145, 25, 160, "bal");
+        lampa(-100, 42, 197, "bal");
+
+        const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
+        scene.add( directionalLight );
+        directionalLight.intensity = 0.05;
+
+        document.addEventListener('keydown', handleKeyDown);
+        function handleKeyDown(event) {
+            if (event.key == 'I' || event.key == 'i') {
+                if(document.getElementById("watermark").classList.contains("hide")){
+                    document.getElementById("watermark").classList.remove("hide");
+                    document.getElementById("watermark2").classList.remove("hide");
+                }else{
+                    document.getElementById("watermark").classList.add("hide");
+                    document.getElementById("watermark2").classList.add("hide");
+                }
+            }
+            if (event.key == 'N' || event.key == 'n') {
+                if (nappal) {
+                    renderer.setClearColor(0x040620);
+                    nappal = false;
+                    directionalLight.intensity = 0.05;
+                } else {
+                    renderer.setClearColor(0xc9e9f6);
+                    nappal = true;
+                    directionalLight.intensity = 1;
+                }
+            }
+        }
+
+    }
+    function animate() {
+        requestAnimationFrame( animate );
+        controls.update();
+        render();
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+        renderer.shadowMap.enabled = true;
+    }
+
+</script>
+</body>
+</html>

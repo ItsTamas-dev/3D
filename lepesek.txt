@@ -1,0 +1,42 @@
+Óceán:
+	Modellezés:
+		egy uj Plane
+		ocean modifier
+		scale állítása, hullám bekapcsolása,
+		szín beállítása
+		modifier másolása, átírása
+	Animáció (nem került bele a projektbe)
+		animáció eleje: timer beállítása
+		animáció vége: timer beállítása
+
+Hajó:
+	Modellezés:
+		alap kocka átméretezése
+		loop cutok létrehozása
+		téglatest két végének felfelése tolása (proportional editing)
+		alsó rész átméretezése
+		hajó elejének szerkeztése
+		hajó eleje, hátulja feltolása (extrude)
+		hajó belseje (extrude)
+		árbócok lehejezése, eltolás, forgatás
+		hajóorr letétele
+		kis oszlopok letétele (mirror modifier)
+		keret lehejés, ((loop cut, proportional editing))
+		kapitányi szoba (extrude)
+		lépcső -kocka átméretezése, másolása
+		ágyúhelyek- téglatestek letétele, fő elemre boolean modifier
+		kiállások- kocka (loop cut, proportional editing, mirror modifier)
+		ablak, ajtó lyuk - kocka(loop cut, proportional editing), mirror modifier
+		vitorla, - plane(loop cut, proportional editing)
+		kilátó - cylinder mesh, átméretezés, tükrötés, boolean modifier
+	Textúrázás:
+		elem kijelölése
+		material menü
+		ha még nincs megfelelő textura, akkor újat hozunk letre:
+			beállítjuk, hogy a textura image texture legyen
+			kiválaszjuk a megfelelő file-t, a pajzsot bekapcsoljuk (textúra megmaradjon)
+		ha már van megfelelő textura csak kiválasztjuk
+
+	A két kiexportált hajó ugyan az, csak a vitorla textura beállítása lett más.
+			
+		
